@@ -12,77 +12,82 @@ dotenv.config();
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+// Constants
+const PORT = 8080;
+const HOST = '0.0.0.0';
+
+
 mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, () => {
-  console.log('Connected to database!');
-  app.listen(80, () => console.log('Server Up and running'));
+    console.log('Connected to database!');
+    app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}`));
 });
 
 app.get('/task/getTasks', (req, res) => {
-  console.log('/getTasks');
+    console.log('/getTasks');
 
-  Task.find({}, (error, tasks) => {
-    if (error) return res.status(500).send(error);
+    Task.find({}, (error, tasks) => {
+        if (error) return res.status(500).send(error);
 
-    res.status(200).send(getSuccessResponse(tasks));
-  });
+        res.status(200).send(getSuccessResponse(tasks));
+    });
 });
 
 app.post('/task/getTaskById', jsonParser, (req, res) => {
-  console.log('/getTaskById');
+    console.log('/getTaskById');
 
-  const id = req.body.id;
+    const id = req.body.id;
 
-  Task.find({ _id: id }, (err, tasks) => {
-    if (err) return res.status(500).send(err);
+    Task.find({ _id: id }, (err, tasks) => {
+        if (err) return res.status(500).send(err);
 
-    res.status(200).send(getSuccessResponse(tasks[0]));
-  });
+        res.status(200).send(getSuccessResponse(tasks[0]));
+    });
 });
 
 app.post('/task/addTask', jsonParser, async (req, res) => {
-  console.log('/addTask');
+    console.log('/addTask');
 
-  const task = new Task({
-    label: req.body.label,
-    done: req.body.done,
-    important: req.body.important,
-  });
+    const task = new Task({
+        label: req.body.label,
+        done: req.body.done,
+        important: req.body.important,
+    });
 
-  await task.save((err) => {
-    if (err) res.status(500).send(err);
+    await task.save((err) => {
+        if (err) res.status(500).send(err);
 
-    res.status(200).send(getSuccessResponse({}));
-  });
+        res.status(200).send(getSuccessResponse({}));
+    });
 });
 
 app.post('/task/updateTask', jsonParser, (req, res) => {
-  console.log('/updateTask');
+    console.log('/updateTask');
 
-  if (!req.body.newTask)
-    return res.status(422).send({ message: 'Отсутствует обязательный параметр newTask' });
+    if (!req.body.newTask)
+        return res.status(422).send({ message: 'Отсутствует обязательный параметр newTask' });
 
-  const id = req.body.id;
-  const updatedTask = {
-    label: req.body.newTask.label,
-    done: req.body.newTask.done,
-    important: req.body.newTask.important,
-  };
+    const id = req.body.id;
+    const updatedTask = {
+        label: req.body.newTask.label,
+        done: req.body.newTask.done,
+        important: req.body.newTask.important,
+    };
 
-  Task.findByIdAndUpdate(id, updatedTask, (err) => {
-    if (err) return res.send(500, err);
+    Task.findByIdAndUpdate(id, updatedTask, (err) => {
+        if (err) return res.send(500, err);
 
-    res.status(200).send(getSuccessResponse({ id }));
-  });
+        res.status(200).send(getSuccessResponse({ id }));
+    });
 });
 
 app.post('/task/removeTask', jsonParser, (req, res) => {
-  console.log('/removeTask');
+    console.log('/removeTask');
 
-  const id = req.body.id;
+    const id = req.body.id;
 
-  Task.findByIdAndDelete(id, (err) => {
-    if (err) return res.send(500, err);
+    Task.findByIdAndDelete(id, (err) => {
+        if (err) return res.send(500, err);
 
-    res.status(200).send(getSuccessResponse({ id }));
-  });
+        res.status(200).send(getSuccessResponse({ id }));
+    });
 });
