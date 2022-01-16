@@ -14,7 +14,7 @@ app.use(cors());
 
 // Constants
 const PORT = process.env.PORT || 8080;
-const HOST = '0.0.0.0';
+const HOST = 'localhost';
 
 
 mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, () => {
