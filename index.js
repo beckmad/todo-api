@@ -22,6 +22,12 @@ mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, () => {
     app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}`));
 });
 
+app.get('/', (req, res) => {
+    console.log('/');
+
+    res.status(200).write('<h1>Main page</h1>>');
+});
+
 app.get('/task/getTasks', (req, res) => {
     console.log('/getTasks');
 
