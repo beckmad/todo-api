@@ -2,15 +2,18 @@ const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
 const cors = require('cors');
+const fs = require('fs');
 
 const mongoose = require('mongoose');
 const Task = require('./models/Task');
 const jsonParser = express.json();
 const { getSuccessResponse } = require('./constants');
 
+// Middlewares
 dotenv.config();
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use('/static', express.static(__dirname + '/public'))
 
 // Constants
 const PORT = process.env.PORT || 8080;
@@ -22,17 +25,31 @@ mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, () => {
     app.listen(PORT, () => console.log(`Running on http://${HOST}:${PORT}`));
 });
 
-app.use('/', (req, res) => {
-    console.log('/');
+
+app.use((req, res, next) => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+    const day = currentDate.getDate();
+    const hour = currentDate.getHours();
+    const minutes = currentDate.getMinutes();
+    const seconds = currentDate.getSeconds();
+
+    const date = `${year}:${month}:${day} ${hour}:${minutes}:${seconds}`;
+    const log = `${date} ${req.method} ${req.url} ${req.get('user-agent')}\n`;
+
+    console.log(log);
+    fs.appendFile(__dirname + '/public/logs.txt', log, () => {});
+    next();
+});
+
+app.get('/', (req, res) => {
     console.log('process.env', process.env);
 
-    res.status(200).write('<h1>Main page</h1>>');
-    res.end();
+    res.status(200).send('<h1>Main page</h1>');
 });
 
 app.get('/task/getTasks', (req, res) => {
-    console.log('/getTasks');
-
     Task.find({}, (error, tasks) => {
         if (error) return res.status(500).send(error);
 
@@ -41,8 +58,6 @@ app.get('/task/getTasks', (req, res) => {
 });
 
 app.post('/task/getTaskById', jsonParser, (req, res) => {
-    console.log('/getTaskById');
-
     const id = req.body.id;
 
     Task.find({ _id: id }, (err, tasks) => {
@@ -53,8 +68,6 @@ app.post('/task/getTaskById', jsonParser, (req, res) => {
 });
 
 app.post('/task/addTask', jsonParser, async (req, res) => {
-    console.log('/addTask');
-
     const task = new Task({
         label: req.body.label,
         done: req.body.done,
@@ -69,8 +82,6 @@ app.post('/task/addTask', jsonParser, async (req, res) => {
 });
 
 app.post('/task/updateTask', jsonParser, (req, res) => {
-    console.log('/updateTask');
-
     if (!req.body.newTask)
         return res.status(422).send({ message: 'Отсутствует обязательный параметр newTask' });
 
@@ -89,8 +100,6 @@ app.post('/task/updateTask', jsonParser, (req, res) => {
 });
 
 app.post('/task/removeTask', jsonParser, (req, res) => {
-    console.log('/removeTask');
-
     const id = req.body.id;
 
     Task.findByIdAndDelete(id, (err) => {
