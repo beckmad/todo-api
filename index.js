@@ -22,7 +22,7 @@ mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, () => {
     app.listen(PORT, () => console.log(`Running on http://${HOST}:${PORT}`));
 });
 
-app.get('/', (req, res) => {
+app.use('/', (req, res) => {
     console.log('/');
     console.log('process.env', process.env);
 
