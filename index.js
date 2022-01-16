@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Constants
-const PORT = 8080;
+const PORT = process.env.port || 8080;
 const HOST = '0.0.0.0';
 
 
