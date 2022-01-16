@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 8080;
 const HOST = 'localhost';
 
 
-mongoose.connect('mongodb+srv://todo-login:todo-password@todo-cluster.qyynh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useNewUrlParser: true }, () => {
+mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, () => {
     console.log('Connected to database!');
     app.listen(PORT, () => console.log(`Running on http://${HOST}:${PORT}`));
 });
