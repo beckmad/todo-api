@@ -24,6 +24,7 @@ mongoose.connect('mongodb+srv://todo-login:todo-password@todo-cluster.qyynh.mong
 
 app.get('/', (req, res) => {
     console.log('/');
+    console.log('process.env', process.env);
 
     res.status(200).write('<h1>Main page</h1>>');
     res.end();
