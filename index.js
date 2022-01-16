@@ -19,7 +19,7 @@ const HOST = 'localhost';
 
 mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, () => {
     console.log('Connected to database!');
-    app.listen(PORT, HOST, () => console.log(`Running on http://${HOST}:${PORT}`));
+    app.listen(PORT, () => console.log(`Running on http://${HOST}:${PORT}`));
 });
 
 app.get('/', (req, res) => {
